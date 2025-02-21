@@ -1,13 +1,20 @@
 # T-SEC-902
-## Secure the network of Arasaka Corporation.
+## How to use
 
-The goal of this project is to create a secured architecture for our enterprise.
-Using Terraform and Ansible we will use IaC to build and deploy our infrastructure.
+### Launch
 
-The enterprise network will include
-- Firewalling
-- IDS/IPS
-- SIEM
-- XDR
-- Monitoring
-- IAM
+ - Generate a ssh key 
+```shell
+mkdir terraform_azure_key_ssh
+cd terraform_azure_key_ssh
+ssh-keygen -t ed25519 -f sec_azure_key
+```
+ - Launch Terraform 
+```shell
+terraform init --upgrade
+terraform plan -out "main.tfplan"
+terraform apply "main.tfplan"
+```
+
+
+

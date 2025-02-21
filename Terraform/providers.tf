@@ -4,6 +4,10 @@ terraform {
       version = "~> 1.3.0"
       source  = "ansible/ansible"
     }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=4.17.0"
+    }
   }
     #backend "azurerm" {
     #resource_group_name  = "StorageAccount-ResourceGroup"
@@ -16,5 +20,5 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id = "0f702af7-d148-47ad-aa75-f92d5ac76faa"
+  subscription_id = "db7c2d44-82fa-4a66-99fe-a162b13ecf60"
 }

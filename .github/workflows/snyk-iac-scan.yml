@@ -1,0 +1,22 @@
+name: Snyk IaC Scan
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  snyk-iac-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run Snyk to check IaC files for issues
+        uses: snyk/actions/iac@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        args: --severity-threshold=high --report
+      - name: Upload result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif

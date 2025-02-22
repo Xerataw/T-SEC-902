@@ -32,9 +32,26 @@ override.tf.json
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
 
+# Ignore OS based files
+.DS_Store
+
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
 
-# Ignore OS based files
-.DS_Store
+# Ignore any .tfstate backup files
+*.tfstate.backup
+
+# Ignore any plan output files
+*.tfplan
+
+# Ignore any module directories
+**/.terraform/modules/
+
+# Ignore any temporary files created by editors or IDEs
+*.swp
+*.bak
+*.tmp
+
+# Ignore ssh key folder
+/terraform_azure_key_ssh

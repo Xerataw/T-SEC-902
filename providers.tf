@@ -9,17 +9,11 @@ terraform {
       version = "=4.17.0"
     }
   }
-  cloud {
-    organization = "T-SEC-902-NCY-BDX"
-    workspaces {
-      name = "T-SEC-902-DEV"
-    }
-  }
-    #backend "azurerm" {
-    #resource_group_name  = "StorageAccount-ResourceGroup"
-    #storage_account_name = "abcd1234"
-    #container_name       = "tfstate"
-    #key                  = "prod.terraform.tfstate"
-    #use_azuread_auth     = true
+  #backend "azurerm" {
+  #resource_group_name  = "StorageAccount-ResourceGroup"
+  #storage_account_name = "abcd1234"
+  #container_name       = "tfstate"
+  #key                  = "prod.terraform.tfstate"
+  #use_azuread_auth     = true
   #}
 }

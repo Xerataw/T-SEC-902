@@ -1,0 +1,54 @@
+name: Terraform Checks
+
+on:
+  pull_request:
+    paths:
+      - '**.tf'
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform Validation & Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v1
+
+      - name: Run TFLint
+        run: |
+          tflint --init
+          tflint
+
+      - name: Install tfsec
+        run: |
+          curl -sSL https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-linux-amd64 -o tfsec
+          chmod +x tfsec
+          sudo mv tfsec /usr/local/bin/
+
+      - name: Run tfsec
+        run: tfsec .
+
+      - name: Install checkov
+        run: pip install checkov
+
+      - name: Run checkov
+        run: checkov -d .
+

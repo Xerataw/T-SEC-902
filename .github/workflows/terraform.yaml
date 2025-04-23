@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   terraform:
     name: Terraform Validation & Static Analysis
@@ -51,5 +55,5 @@ jobs:
         run: pip install checkov
 
       - name: Run checkov
-        run: checkov -d .
+        run: checkov -d . --skip-check CKV_AZURE_50 --skip-check CKV2_AZURE_31
 

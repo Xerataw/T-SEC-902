@@ -36,7 +36,7 @@ jobs:
       - name: Generate SSH key pair
         run: |
           mkdir -p terraform_azure_key_ssh
-          ssh-kegen -t ed25519 -f terraform_azure_key_ssh/sec_azure_key -N ""
+          ssh-keygen -t ed25519 -f terraform_azure_key_ssh/sec_azure_key -N ""
 
 
       - name: Terraform Validate

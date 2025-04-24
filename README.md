@@ -16,7 +16,11 @@ terraform import azurerm_resource_group.rg-group-16 "/subscriptions/<subscriptio
 ```
 ## Use terraform
 1. Write your config
-2. Validate and plan your config
+2. Create your ssh key
+```shell
+ssh-kegen -t ed25519 -f terraform_azure_key_ssh/sec_azure_key
+```
+3. Validate and plan your config
 ```shell
 terraform plan
 ```

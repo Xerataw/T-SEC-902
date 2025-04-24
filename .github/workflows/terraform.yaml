@@ -51,7 +51,7 @@ jobs:
         working-directory: terraform
 
       - name: Install terraform-docs 
-        run: snap install terraform-docs
+        run: sudo snap install terraform-docs
         working-directory: terraform
 
       - name: Run terraform-docs 

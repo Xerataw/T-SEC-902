@@ -3,7 +3,7 @@ name: Terraform Checks
 on:
   pull_request:
     paths:
-      - '**.tf'
+      - 'terraform/**.tf'
   push:
     branches:
       - main
@@ -27,12 +27,15 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -backend=false
+        working-directory: terraform
 
       - name: Terraform Format Check
         run: terraform fmt -check
+        working-directory: terraform
 
       - name: Terraform Validate
         run: terraform validate
+        working-directory: terraform
 
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v1
@@ -41,16 +44,21 @@ jobs:
         run: |
           tflint --init
           tflint
+        working-directory: terraform
 
       - name: Install checkov
         run: pip3 install checkov
+        working-directory: terraform
 
       - name: Run checkov
         run: checkov -f *.tf --skip-check CKV_AZURE_50 --skip-check CKV2_AZURE_31
+        working-directory: terraform
 
       - name: Install terraform-docs 
         run: snap install terraform-docs
+        working-directory: terraform
 
       - name: Run terraform-docs 
-        run: terraform-docs markdown table . > README_TERRAFORM.md 
+        run: terraform-docs markdown table . > README_TERRAFORM.MD 
+        working-directory: terraform
 

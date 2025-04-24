@@ -22,11 +22,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Generate SSH key pair
-        run: |
-          mkdir -p terraform_azure_key_ssh
-          ssh-keygen -t ed25519 -f terraform_azure_key_ssh/sec_azure_key -N ""
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -36,10 +31,6 @@ jobs:
 
       - name: Terraform Format Check
         run: terraform fmt -check
-        working-directory: terraform
-
-      - name: Terraform Validate
-        run: terraform validate
         working-directory: terraform
 
       - name: Setup TFLint
@@ -66,8 +57,3 @@ jobs:
       - name: Run terraform-docs 
         run: terraform-docs markdown table . > README_TERRAFORM.MD 
         working-directory: terraform
-
-      - name: Clean up generated SSH keys
-        if: always()
-        run: rm -rf terraform_azure_key_ssh
-

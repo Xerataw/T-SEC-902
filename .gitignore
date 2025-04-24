@@ -54,7 +54,7 @@ terraform.rc
 *.tmp
 
 # Ignore ssh key folder
-/terraform_azure_key_ssh
+terraform/terraform_azure_key_ssh
 
 # Ignore terraform files
 main.tfplan

@@ -1,0 +1,2 @@
+[serveurs]
+teleport ansible_host=0.0.0.0 ansible_user=adminuser ansible_ssh_private_key_file=terraform_azure_key_ssh/sec_azure_key

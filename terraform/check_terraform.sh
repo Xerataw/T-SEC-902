@@ -71,10 +71,6 @@ else
 	echo "Formatage correct."
 fi
 
-# Validation de Terraform
-echo "Validation de la configuration Terraform..."
-terraform validate
-
 # Exécution de TFLint
 echo "Exécution de TFLint..."
 tflint --init

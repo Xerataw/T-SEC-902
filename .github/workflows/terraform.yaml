@@ -43,8 +43,14 @@ jobs:
           tflint
 
       - name: Install checkov
-        run: pip install checkov
+        run: pip3 install checkov
 
       - name: Run checkov
         run: checkov -f *.tf --skip-check CKV_AZURE_50 --skip-check CKV2_AZURE_31
+
+      - name: Install terraform-docs 
+        run: snap install terraform-docs
+
+      - name: Run terraform-docs 
+        run: terraform-docs markdown table . > README_TERRAFORM.md 
 

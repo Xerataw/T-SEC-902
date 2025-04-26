@@ -232,13 +232,22 @@ resource "azurerm_subnet_route_table_association" "rta-connectivity-snet-connect
   route_table_id = azurerm_route_table.rt-networking-001.id
 }
 
-#Route par défaut pour la communication entre VNets
+#Route par défaut pour la communication entre VNets et Internet
 resource "azurerm_route" "default_route" {
   name                = "route-default"
   resource_group_name = data.azurerm_resource_group.rg.name
   route_table_name    = azurerm_route_table.rt-networking-001.name
   address_prefix      = "0.0.0.0/0"
   next_hop_type       = "Internet"
+}
+
+# Route interne pour la communication entre VNETS
+resource "azurerm_route" "inside_route" {
+  name                = "inside-route"
+  resource_group_name = data.azurerm_resource_group.rg.name 
+  route_table_name    = azurerm_route_table.rt-networking-001.name 
+  addresse_prefix     = "10.0.0.0/32"
+  next_hop_type       = "VirtualNetworkGateway"
 }
 
 # Network Interface for each VM site-web-001
@@ -519,5 +528,10 @@ resource "azurerm_linux_virtual_machine" "vm-firewall-001" {
     offer     = "freebsd-14_2"
     sku       = "14_2-release-amd64-gen2-ufs"
     version   = "latest"
+  }
+  plan {
+    name      = "14_2-release-amd64-gen2-ufs"
+    publisher = "thefreebsdfoundation"
+    product   = "freebsd-14_2"
   }
 }

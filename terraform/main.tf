@@ -10,6 +10,115 @@ data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
 
+# Règle de sécurités réseaux 
+resource "azurerm_network_security_group" "nic-backup-001-nsg" {
+  name                = "nic-backup-001-nsg"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-From-Teleport"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3022"
+    source_address_prefixes    = ["VirtualNetwork"]
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_security_group" "nic-ftp-001-nsg" {
+  name                = "nic-ftp-001-nsg"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-From-Teleport"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3022"
+    source_address_prefixes    = ["VirtualNetwork"]
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_security_group" "nic-samba-001-nsg" {
+  name                = "nic-samba-001-nsg"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-From-Teleport"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3022"
+    source_address_prefixes    = ["VirtualNetwork"]
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_security_group" "nic-web-001-nsg" {
+  name                = "nic-web-001-nsg"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-From-Teleport"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3022"
+    source_address_prefixes    = ["VirtualNetwork"]
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_security_group" "nic-surveillance-001-nsg" {
+  name                = "nic-surveillance-001-nsg"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-From-Teleport"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3022"
+    source_address_prefixes    = ["VirtualNetwork"]
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_security_group" "nic-firewall-001-nsg" {
+  name                = "nic-firewall-001-nsg"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-Https-For-Teleport"
+    priority                   = 3096
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefixes    = ["*"]
+    destination_address_prefix = "*"
+  }
+}
+
 # VNet 1
 resource "azurerm_virtual_network" "vnet-internal-001" {
   name                = "vnet-internal-001"
@@ -244,9 +353,9 @@ resource "azurerm_route" "default_route" {
 # Route interne pour la communication entre VNETS
 resource "azurerm_route" "inside_route" {
   name                = "inside-route"
-  resource_group_name = data.azurerm_resource_group.rg.name 
-  route_table_name    = azurerm_route_table.rt-networking-001.name 
-  addresse_prefix     = "10.0.0.0/32"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  route_table_name    = azurerm_route_table.rt-networking-001.name
+  address_prefix      = "10.0.0.0/32"
   next_hop_type       = "VirtualNetworkGateway"
 }
 
@@ -260,6 +369,11 @@ resource "azurerm_network_interface" "nic-site-web-001" {
     subnet_id                     = azurerm_subnet.snet-internal-001.id
     private_ip_address_allocation = "Dynamic"
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_web_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-site-web-001.id
+  network_security_group_id = azurerm_network_security_group.nic-web-001-nsg.id
 }
 
 # Virtual Machines
@@ -300,6 +414,11 @@ resource "azurerm_network_interface" "nic-ftp-001" {
     subnet_id                     = azurerm_subnet.snet-internal-002.id
     private_ip_address_allocation = "Dynamic"
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_ftp_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-ftp-001.id
+  network_security_group_id = azurerm_network_security_group.nic-ftp-001-nsg.id
 }
 
 resource "azurerm_linux_virtual_machine" "vm-ftp-001" {
@@ -343,6 +462,11 @@ resource "azurerm_network_interface" "nic-surveillance-001" {
   }
 }
 
+resource "azurerm_network_interface_security_group_association" "nic_surveillance_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-surveillance-001.id
+  network_security_group_id = azurerm_network_security_group.nic-surveillance-001-nsg.id
+}
+
 # Virtual Machines
 resource "azurerm_linux_virtual_machine" "vm-surveillance-001" {
   name                = "vm-surveillance-001"
@@ -381,6 +505,11 @@ resource "azurerm_network_interface" "nic-samba-001" {
     subnet_id                     = azurerm_subnet.snet-internal-004.id
     private_ip_address_allocation = "Dynamic"
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_samba_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-samba-001.id
+  network_security_group_id = azurerm_network_security_group.nic-samba-001-nsg.id
 }
 
 # Virtual Machines
@@ -423,6 +552,11 @@ resource "azurerm_network_interface" "nic-backup-001" {
   }
 }
 
+resource "azurerm_network_interface_security_group_association" "nic_backup_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-backup-001.id
+  network_security_group_id = azurerm_network_security_group.nic-backup-001-nsg.id
+}
+
 # Virtual Machines
 resource "azurerm_linux_virtual_machine" "vm-backup-001" {
   name                = "vm-backup-001"
@@ -463,6 +597,11 @@ resource "azurerm_network_interface" "nic-bastion-001" {
   }
 }
 
+resource "azurerm_network_interface_security_group_association" "nic_bastion_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-bastion-001.id
+  network_security_group_id = azurerm_network_security_group.nic-firewall-001-nsg.id
+}
+
 # Virtual Machines
 resource "azurerm_linux_virtual_machine" "vm-bastion-001" {
   name                = "vm-bastion-001"
@@ -501,6 +640,11 @@ resource "azurerm_network_interface" "nic-firewall-001" {
     subnet_id                     = azurerm_subnet.snet-connectivity-001.id
     private_ip_address_allocation = "Dynamic"
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_firewall_assoc" {
+  network_interface_id      = azurerm_network_interface.nic-firewall-001.id
+  network_security_group_id = azurerm_network_security_group.nic-firewall-001-nsg.id
 }
 
 # Virtual Machines

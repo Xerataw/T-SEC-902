@@ -114,7 +114,7 @@ resource "azurerm_network_security_group" "nic-firewall-001-nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefixes    = ["*"]
+    source_address_prefixes    = ["Internet"]
     destination_address_prefix = "*"
   }
 }

@@ -668,14 +668,9 @@ resource "azurerm_linux_virtual_machine" "vm-firewall-001" {
     storage_account_type = "Standard_LRS"
   }
   source_image_reference {
-    publisher = "thefreebsdfoundation"
-    offer     = "freebsd-14_2"
-    sku       = "14_2-release-amd64-gen2-ufs"
+    publisher = "Debian"
+    offer     = "debian-12"
+    sku       = "12-gen2"
     version   = "latest"
-  }
-  plan {
-    name      = "14_2-release-amd64-gen2-ufs"
-    publisher = "thefreebsdfoundation"
-    product   = "freebsd-14_2"
   }
 }

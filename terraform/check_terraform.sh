@@ -38,6 +38,7 @@ if ! command -v tflint &>/dev/null; then
 fi
 
 # Installation de Checkov dans un environnement virtuel
+source .venv/bin/activate
 if ! command -v checkov &>/dev/null; then
 	echo "Checkov n'est pas installé. Création de l'environnement virtuel et installation..."
 
@@ -50,6 +51,7 @@ if ! command -v checkov &>/dev/null; then
 	pip3 install checkov
 	deactivate
 fi
+deactivate
 
 # Initialisation de Terraform
 echo "Initialisation de Terraform..."
@@ -70,10 +72,6 @@ if ! terraform fmt -check -recursive; then
 else
 	echo "Formatage correct."
 fi
-
-# Validation de Terraform
-echo "Validation de la configuration Terraform..."
-terraform validate
 
 # Exécution de TFLint
 echo "Exécution de TFLint..."

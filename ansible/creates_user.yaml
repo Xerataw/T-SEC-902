@@ -1,0 +1,20 @@
+---
+- name: Création des users  
+  hosts: all
+  become: true
+
+  vars:
+    users:
+      - name: <username>
+        password: <password>
+
+  tasks:
+    - name: Ensure users exist with sudo rights
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        password: "{{ item.password | password_hash('sha512') }}"
+      loop: "{{ users }}"
+

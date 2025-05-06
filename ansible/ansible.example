@@ -1,0 +1,8 @@
+[defaults]
+host_key_checking = False #Pour éviter le fingerprint
+inventory=<indiquer le fichier contenant les différents hosts>
+remote_tmp=/tmp
+
+[ssh_connection]
+scp_if_ssh = True
+ssh_args = -F <chemin vers votre fichier ssh_config du tbot>

@@ -63,3 +63,9 @@ terraform/terraform.tfstate
 
 # python
 terraform/.venv/
+
+# ansible
+ansible/ansible.cfg 
+ansible/keys 
+ansible/tuto.md
+ansible/hosts

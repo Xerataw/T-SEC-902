@@ -1,7 +1,7 @@
 # T-SEC-902
 
 ## Détails de l'infrastructure
-Vous pouvez trouver les détails de notre infrastructure [ICI](./README_TERRAFORM.md)
+Vous pouvez trouver les détails de notre infrastructure [ICI](./terraform/README_TERRAFORM.md)
 ## Project setup
 1. Install Terraform -> https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 2. Initialize the project

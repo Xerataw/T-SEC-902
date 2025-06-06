@@ -495,6 +495,60 @@ resource "azurerm_linux_virtual_machine" "vm-surveillance-001" {
   }
 }
 
+resource "azurerm_linux_virtual_machine" "vm-surveillance-002" {
+  name                = "vm-surveillance-002"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  ## 8$ par mois
+  size                            = "Standard_B1s"
+  admin_username                  = "adminuser"
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("./terraform_azure_key_ssh/sec_azure_key.pub")
+  }
+
+  network_interface_ids = [azurerm_network_interface.nic-surveillance-001.id]
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
+}
+
+resource "azurerm_linux_virtual_machine" "vm-surveillance-003" {
+  name                = "vm-surveillance-003"
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+  ## 8$ par mois
+  size                            = "Standard_B1s"
+  admin_username                  = "adminuser"
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = "adminuser"
+    public_key = file("./terraform_azure_key_ssh/sec_azure_key.pub")
+  }
+
+  network_interface_ids = [azurerm_network_interface.nic-surveillance-001.id]
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
+  }
+}
+
 # Network Interface for each VM samba-001
 resource "azurerm_network_interface" "nic-samba-001" {
   name                = "nic-samba-001"

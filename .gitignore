@@ -67,3 +67,6 @@ terraform.tfstate
 
 # Fichier hosts Ansible
 **/hosts
+Terraform/terraform_azure_key_ssh/sec_azure_key
+Terraform/terraform_azure_key_ssh/sec_azure_key.gpg
+Terraform/terraform_azure_key_ssh/sec_azure_key.pub

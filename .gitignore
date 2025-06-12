@@ -62,4 +62,8 @@ main.tfplan
 terraform.tfstate
 
 # python
-.venv/
+**/.venv/
+**/venv/
+
+# Fichier hosts Ansible
+**/hosts

@@ -1,0 +1,24 @@
+---
+- name: Mettre à jour les systèmes Ubuntu/Debian
+  hosts: all
+  become: yes
+  tasks:
+    - name: Mettre à jour la liste des paquets
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600 
+
+    - name: Mettre à niveau tous les paquets installés
+      apt:
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
+
+    - name: Redémarrer la machine si un kernel a été mis à jour
+      reboot:
+        reboot_timeout: 600
+        test_command: whoami
+      when: ansible_facts.packages['linux-image-generic'] is changed or
+            ansible_facts.packages['linux-image'] is changed
+      ignore_errors: yes
+

@@ -1,0 +1,66 @@
+---
+- name: Installer et configurer vsftpd 
+  hosts: vm-ftp-001
+  become: yes
+  vars:
+    ftp_user: ftpuser
+    ftp_group: ftpgroup
+    vsftpd_conf_path: /etc/vsftpd.conf
+    script_path: /home/adminuser/generate_sql.sh
+    script_dest: /home/adminuser/generate_sql.sh
+
+  tasks:
+
+    - name: Installer vsftpd
+      apt:
+        name: vsftpd
+        state: present
+        update_cache: yes
+
+    - name: Sauvegarder l'ancien fichier vsftpd.conf
+      copy:
+        src: "{{ vsftpd_conf_path }}"
+        dest: "{{ vsftpd_conf_path }}.backup"
+        remote_src: yes
+      when: vsftpd_conf_path is file
+
+    - name: Déployer une config vsftpd sans anonymous
+      copy:
+        dest: "{{ vsftpd_conf_path }}"
+        content: |
+          listen=YES
+          anonymous_enable=NO
+          local_enable=YES
+          write_enable=YES
+          local_umask=022
+          dirmessage_enable=YES
+          xferlog_enable=YES
+          connect_from_port_20=YES
+          chroot_local_user=YES
+          secure_chroot_dir=/var/run/vsftpd/empty
+          pam_service_name=vsftpd
+          rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+          rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+          ssl_enable=NO
+          pasv_enable=YES
+          pasv_min_port=1024
+          pasv_max_port=1048
+
+    - name: Redémarrer vsftpd
+      service:
+        name: vsftpd
+        state: restarted
+        enabled: yes
+
+    - name: Copier le script generate_sql.sh sur la VM
+      copy:
+        src: ./generate_sql.sh
+        dest: "{{ script_dest }}"
+        mode: '0755'
+
+    - name: Exécuter le script generate_sql.sh
+      command: "{{ script_dest }}"
+      args:
+        chdir: /home/adminuser
+
+

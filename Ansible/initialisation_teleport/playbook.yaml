@@ -1,0 +1,34 @@
+- name: Installation de teleport sur la vm
+  hosts: vm-bastion-001
+  become: yes
+  vars:
+    local_teleport_config: "./Ressources/teleport.yaml"  
+    remote_teleport_dir: "/home/adminuser/Ressources"
+  tasks:
+    - name: Update du système
+      apt:
+        update_cache: yes
+
+    - name: Upgrade du système
+      apt:
+        upgrade: dist
+
+    - name: Copier teleport.yaml vers la VM
+      copy:
+        src: "{{ local_teleport_config }}"
+        dest: "{{ remote_teleport_dir }}/teleport.yaml"
+        owner: adminuser
+        group: adminuser
+        mode: '0644'
+
+    - name: Installer teleport
+      shell: curl https://cdn.teleport.dev/install.sh | bash -s 17.4.2
+      args:
+        warn: false
+
+    - name: Initialiser teleport avec le fichier de config
+      shell: teleport start --config="{{ remote_teleport_dir }}/teleport.yaml"
+      async: 10
+      poll: 0
+      ignore_errors: yes
+

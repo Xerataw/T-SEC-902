@@ -1,0 +1,75 @@
+- name: Installation et paramétrage de rsyslog (vm centrale)
+  hosts: vm-surveillance-001
+  become: true
+
+  tasks:
+    - name: Installation de rsyslog
+      ansible.builtin.package:
+        name: rsyslog
+        state: present
+
+    - name: Configuration de rsyslog
+      ansible.builtin.copy:
+        src: "ressource/rsyslog.con"
+        dest: "/etc/rsyslog.conf"
+        force: yes
+
+    - name: Redémarrage de rsyslog
+      ansible.builtin.systemd:
+        name: rsyslog
+        state: restarted
+      
+    - name: Activation par défaut de rsyslog
+      ansible.builtin.systemd:
+        name: rsyslog
+        state: enabled
+
+- name: Installation et paramétrage de rsyslog (agents)
+  hosts: "all"
+  become: true
+
+  tasks:
+    - name: Installation de rsyslog
+      ansible.builtin.package:
+        name: rsyslog
+        state: present
+
+    - name: Configuration de rsyslog
+      ansible.builtin.copy:
+        src: "ressource/50-default.conf"
+        dest: "/etc/rsyslog.d/50-default.conf"
+        force: yes
+
+    - name: Redémarrage de rsyslog
+      ansible.builtin.systemd:
+        name: rsyslog
+        state: restarted
+      
+    - name: Activation par défaut de rsyslog
+      ansible.builtin.systemd:
+        name: rsyslog
+        state: enabled
+
+- name: Installation de logwatch (vm centrale)
+  hosts: vm-surveillance-001
+  become: true
+
+  tasks:
+    - name: Pré-configuration de postfix
+      ansible.builtin.debconf:
+        name: postfix
+        question: postfix/main_mailer_type
+        value: 'No configuration'
+        vtype: select
+
+    - name: Installation de logwatch
+      ansible.builtin.package:
+        name: logwatch
+        state: present
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+
+    - name: Configuration de logwatch
+      ansible.builtin.copy:
+        src: "ressource/logwatch.conf"
+        dest: "/etc/logwatch/conf/logwatch.conf"

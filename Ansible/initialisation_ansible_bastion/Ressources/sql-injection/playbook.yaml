@@ -1,0 +1,135 @@
+- name: Déploiement Flask + Teleport
+  hosts: vm-site-web
+  become: true
+  vars_prompt:
+    - name: "teleport_token"
+      prompt: "Entrez le token Teleport (valide)"
+      private: no
+
+  vars:
+    app_dir: /opt/flaskapp
+    teleport_config: /home/adminuser/.config/teleport/app_config.yaml
+
+  tasks:
+    - name: Créer le répertoire de l'application
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: adminuser
+        group: adminuser
+        mode: '0755'
+
+    - name: Copier les fichiers Flask
+      copy:
+        src: "{{ item }}"
+        dest: "{{ app_dir }}/"
+        owner: adminuser
+        group: adminuser
+      loop:
+        - files/main.py
+        - files/requirements.txt
+
+    - name: Installer les dépendances Python
+      pip:
+        requirements: "{{ app_dir }}/requirements.txt"
+        executable: pip3
+
+    - name: Créer le service systemd pour Flask
+      copy:
+        dest: /etc/systemd/system/flaskapp.service
+        content: |
+          [Unit]
+          Description=Flask API service
+          After=network.target
+
+          [Service]
+          User=adminuser
+          WorkingDirectory={{ app_dir }}
+          ExecStart=/usr/bin/python3 {{ app_dir }}/main.py
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      notify:
+        - Reload systemd
+        - Enable and start flaskapp
+
+    - name: Créer le dossier de configuration Teleport
+      file:
+        path: "{{ teleport_config | dirname }}"
+        state: directory
+        owner: adminuser
+        group: adminuser
+        mode: '0700'
+
+    - name: Copier le fichier de configuration Teleport
+      copy:
+        src: files/app_config.yaml
+        dest: "{{ teleport_config }}"
+        owner: adminuser
+        group: adminuser
+        mode: '0600'
+
+    - name: Ajouter le token Teleport dans la config
+      lineinfile:
+        path: "{{ teleport_config }}"
+        regexp: '^token:'
+        line: "token: {{ teleport_token }}"
+        insertafter: '^auth_servers:.*'
+
+    - name: Créer le service systemd pour Teleport
+      copy:
+        dest: /etc/systemd/system/teleport.service
+        content: |
+          [Unit]
+          Description=Teleport Service
+          After=network.target
+
+          [Service]
+          User=adminuser
+          ExecStart=/usr/local/bin/teleport start --config={{ teleport_config }}
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+      notify:
+        - Reload systemd
+        - Enable and start teleport
+
+    - name: Vérifier que le service Flask fonctionne
+      systemd:
+        name: flaskapp
+        state: started
+        enabled: yes
+      register: flask_status
+
+    - name: Vérifier que le service Teleport fonctionne
+      systemd:
+        name: teleport
+        state: started
+        enabled: yes
+      register: teleport_status
+
+    - name: Afficher les statuts
+      debug:
+        msg: |
+          Flask service: {{ 'OK' if flask_status.status.ActiveState == 'active' else 'KO' }}
+          Teleport service: {{ 'OK' if teleport_status.status.ActiveState == 'active' else 'KO' }}
+
+  handlers:
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start flaskapp
+      systemd:
+        name: flaskapp
+        enabled: yes
+        state: started
+
+    - name: Enable and start teleport
+      systemd:
+        name: teleport
+        enabled: yes
+        state: started
+

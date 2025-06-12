@@ -1,0 +1,52 @@
+---
+- name: Installer Ansible et copier le dossier Ressources sur la VM bastion
+  hosts: vm-bastion-001
+  become: yes
+  vars:
+    local_ressources_path: "./Ressources"
+    remote_ressources_path: "/home/adminuser/Ressources"
+    local_ssh_key_path: "./sec_azure_key"
+    remote_ssh_key_path: "/home/adminuser/.ssh/sec_azure_key"
+
+  tasks:
+    - name: Mettre à jour la liste des paquets apt
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Installer dépendances pour Ansible
+      apt:
+        name:
+          - software-properties-common
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Installer Ansible via pip3
+      pip:
+        name: ansible
+        executable: pip3
+
+    - name: Copier le dossier Ressources local vers la VM bastion
+      synchronize:
+        src: "{{ local_ressources_path }}/"
+        dest: "{{ remote_ressources_path }}/"
+        recursive: yes
+        delete: no
+
+    - name: Copier la clé SSH sec_azure_key vers la VM bastion
+      copy:
+        src: "{{ local_ssh_key_path }}"
+        dest: "{{ remote_ssh_key_path }}"
+        owner: adminuser
+        group: adminuser
+        mode: '0600'
+
+    - name: S'assurer que le dossier .ssh existe et a les bons droits
+      file:
+        path: /home/adminuser/.ssh
+        state: directory
+        owner: adminuser
+        group: adminuser
+        mode: '0700'
+

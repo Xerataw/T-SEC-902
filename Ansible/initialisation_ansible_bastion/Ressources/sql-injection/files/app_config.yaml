@@ -1,0 +1,33 @@
+version: v3
+teleport:
+  nodename: vm-site-web-001
+  data_dir: /home/adminuser/.config/teleport
+  join_params:
+    token_name:  
+    method: token
+  proxy_server: teleport.ecotecknik.fr:443
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  ca_pin: ""
+  diag_addr: ""
+auth_service:
+  enabled: "no"
+ssh_service:
+  enabled: "no"
+proxy_service:
+  enabled: "no"
+  https_keypairs: []
+  https_keypairs_reload_interval: 0s
+  acme: {}
+app_service:
+  enabled: "yes"
+  debug_app: false
+  apps:
+  - name: site-web
+      uri: http://10.0.1.4:5000 
+    public_addr: ""
+    insecure_skip_verify: false
+    use_any_proxy_public_addr: false

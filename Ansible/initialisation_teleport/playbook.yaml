@@ -13,6 +13,14 @@
       apt:
         upgrade: dist
 
+    - name: Créer le répertoire de destination
+      file:
+        path: "{{ remote_teleport_dir }}"
+        state: directory
+        owner: adminuser
+        group: adminuser
+        mode: '0755'
+
     - name: Copier teleport.yaml vers la VM
       copy:
         src: "{{ local_teleport_config }}"
@@ -24,10 +32,15 @@
     - name: Installer teleport
       shell: curl https://cdn.teleport.dev/install.sh | bash -s 17.4.2
       args:
-        warn: false
+        executable: /bin/bash
+
+    - name: Générer un certificat auto-signé
+      shell: |
+        openssl req -x509 -newkey rsa:4096 -keyout /var/lib/teleport/webproxy_key.pem -out /var/lib/teleport/webproxy_cert.pem -days 365 -nodes -subj "/CN=teleport.ecotecknik.fr"
+      become: yes
 
     - name: Initialiser teleport avec le fichier de config
-      shell: teleport start --config="{{ remote_teleport_dir }}/teleport.yaml"
+      shell: sudo teleport start --config="{{ remote_teleport_dir }}/teleport.yaml"
       async: 10
       poll: 0
       ignore_errors: yes

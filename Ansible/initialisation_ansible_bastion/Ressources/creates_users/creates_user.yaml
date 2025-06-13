@@ -5,8 +5,14 @@
 
   vars:
     users:
-      - name: <username>
-        password: <password>
+      - name: 
+        password: ""
+      - name: 
+        password: ""
+      - name: 
+        password: ""
+      - name: 
+        password: ""
 
   tasks:
     - name: Ensure users exist with sudo rights

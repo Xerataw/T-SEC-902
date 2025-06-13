@@ -1,0 +1,1 @@
+sudo tctl tokens add --type=node --ttl=0

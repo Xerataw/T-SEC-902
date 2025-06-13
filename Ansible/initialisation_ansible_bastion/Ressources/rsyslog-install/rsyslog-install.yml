@@ -10,7 +10,7 @@
 
     - name: Configuration de rsyslog
       ansible.builtin.copy:
-        src: "ressource/rsyslog.con"
+        src: "ressource/rsyslog.conf"
         dest: "/etc/rsyslog.conf"
         force: yes
 
@@ -20,9 +20,9 @@
         state: restarted
       
     - name: Activation par défaut de rsyslog
-      ansible.builtin.systemd:
+      ansible.builtin.service:
         name: rsyslog
-        state: enabled
+        enabled: yes
 
 - name: Installation et paramétrage de rsyslog (agents)
   hosts: "all"
@@ -46,9 +46,9 @@
         state: restarted
       
     - name: Activation par défaut de rsyslog
-      ansible.builtin.systemd:
+      ansible.builtin.service:
         name: rsyslog
-        state: enabled
+        enabled: yes
 
 - name: Installation de logwatch (vm centrale)
   hosts: vm-surveillance-001
@@ -68,8 +68,3 @@
         state: present
       environment:
         DEBIAN_FRONTEND: noninteractive
-
-    - name: Configuration de logwatch
-      ansible.builtin.copy:
-        src: "ressource/logwatch.conf"
-        dest: "/etc/logwatch/conf/logwatch.conf"

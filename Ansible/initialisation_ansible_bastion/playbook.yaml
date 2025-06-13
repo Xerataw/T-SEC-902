@@ -5,8 +5,9 @@
   vars:
     local_ressources_path: "./Ressources"
     remote_ressources_path: "/home/adminuser/Ressources"
-    local_ssh_key_path: "./sec_azure_key"
+    local_ssh_key_path: "../../Terraform/terraform_azure_key_ssh/sec_azure_key"
     remote_ssh_key_path: "/home/adminuser/.ssh/sec_azure_key"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
   tasks:
     - name: Mettre à jour la liste des paquets apt

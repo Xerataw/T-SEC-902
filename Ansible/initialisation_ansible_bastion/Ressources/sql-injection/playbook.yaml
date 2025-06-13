@@ -1,5 +1,5 @@
 - name: Déploiement Flask + Teleport
-  hosts: vm-site-web
+  hosts: vm-site-web-001
   become: true
   vars_prompt:
     - name: "teleport_token"
